@@ -25,8 +25,19 @@ async def websocket_endpoint(websocket: WebSocket):
         if lang == "cpp":
             with open("temp.cpp", "w", encoding="utf-8") as f:
                 f.write(code)
+            
+            # AtCoder仕様のコンパイルコマンド
+            compile_cmd = [
+                "g++",
+                "-std=c++17",  # C++17 (C++20が良い場合は -std=c++20)
+                "-O2",         # 最適化
+                "-I.",         # カレントフォルダの atcoder/ をインクルード参照させる
+                "temp.cpp",
+                "-o", "temp.exe" if sys.platform == "win32" else "./temp"
+            ]
+
             compile_res = subprocess.run(
-                ["g++", "-O2", "temp.cpp", "-o", "temp.exe" if sys.platform == "win32" else "./temp"],
+                compile_cmd,
                 capture_output=True, text=True
             )
             if compile_res.returncode != 0:
